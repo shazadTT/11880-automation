@@ -1,0 +1,79 @@
+name: 11880 Firmeneintrag
+
+on:
+  workflow_dispatch:
+    inputs:
+      firma:
+        required: true
+        type: string
+      strasse:
+        required: true
+        type: string
+      hausnummer:
+        required: true
+        type: string
+      plz:
+        required: true
+        type: string
+      ort:
+        required: true
+        type: string
+      telpre:
+        required: true
+        type: string
+      telnummer:
+        required: true
+        type: string
+      branche:
+        required: true
+        type: string
+      email:
+        required: false
+        type: string
+        default: ""
+      website:
+        required: false
+        type: string
+        default: ""
+      kontakt_vorname:
+        required: true
+        type: string
+      kontakt_nachname:
+        required: true
+        type: string
+      kontakt_email:
+        required: true
+        type: string
+
+jobs:
+  eintrag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install playwright
+      - run: playwright install chromium
+      - run: python 11880_eintrag.py
+        env:
+          FIRMA: ${{ inputs.firma }}
+          STRASSE: ${{ inputs.strasse }}
+          HAUSNUMMER: ${{ inputs.hausnummer }}
+          PLZ: ${{ inputs.plz }}
+          ORT: ${{ inputs.ort }}
+          TELPRE: ${{ inputs.telpre }}
+          TELNUMMER: ${{ inputs.telnummer }}
+          BRANCHE: ${{ inputs.branche }}
+          EMAIL: ${{ inputs.email }}
+          WEBSITE: ${{ inputs.website }}
+          KONTAKT_VORNAME: ${{ inputs.kontakt_vorname }}
+          KONTAKT_NACHNAME: ${{ inputs.kontakt_nachname }}
+          KONTAKT_EMAIL: ${{ inputs.kontakt_email }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: fehler-screenshot
+          path: fehler_screenshot.png
+          retention-days: 7
